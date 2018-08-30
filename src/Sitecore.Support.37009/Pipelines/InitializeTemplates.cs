@@ -27,21 +27,22 @@ namespace Sitecore.Support.Commerce.Connect.CommerceServer.Pipelines
                         break;
                     }
                 }
-                database = Factory.GetDatabase("web");
-                if (database != null)
-                {
-                    var dataProviders = database.GetDataProviders();
+            }
+            database = Factory.GetDatabase("web");
+            if (database != null)
+            {
+                var dataProviders = database.GetDataProviders();
 
-                    foreach (var provider in dataProviders)
+                foreach (var provider in dataProviders)
+                {
+                    if (provider is CatalogDataProvider)
                     {
-                        if (provider is CatalogDataProvider)
-                        {
-                            typeof(CatalogDataProvider).GetMethod("InitializeTemplates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(provider, new object[] { provider.Database });
-                            break;
-                        }
+                        typeof(CatalogDataProvider).GetMethod("InitializeTemplates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(provider, new object[] { provider.Database });
+                        break;
                     }
                 }
             }
-
         }
+
     }
+}
