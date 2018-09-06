@@ -14,15 +14,32 @@ namespace Sitecore.Support.Commerce.Connect.CommerceServer.Pipelines
     {
         public void Process(PipelineArgs args)
         {
-            var database = Factory.GetDatabase("master");
-            var dataProviders = database.GetDataProviders();
-
-            foreach (var provider in dataProviders)
+            var database = Factory.GetDatabase("master",false);
+            if (database != null)
             {
-                if (provider is CatalogDataProvider)
+                var dataProviders = database.GetDataProviders();
+
+                foreach (var provider in dataProviders)
                 {
-                    typeof(CatalogDataProvider).GetMethod("InitializeTemplates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(provider, new object[] { provider.Database });
-                    break;
+                    if (provider is CatalogDataProvider)
+                    {
+                        typeof(CatalogDataProvider).GetMethod("InitializeTemplates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(provider, new object[] { provider.Database });
+                        break;
+                    }
+                }
+            }
+            database = Factory.GetDatabase("web",false);
+            if (database != null)
+            {
+                var dataProviders = database.GetDataProviders();
+
+                foreach (var provider in dataProviders)
+                {
+                    if (provider is CatalogDataProvider)
+                    {
+                        typeof(CatalogDataProvider).GetMethod("InitializeTemplates", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(provider, new object[] { provider.Database });
+                        break;
+                    }
                 }
             }
         }
